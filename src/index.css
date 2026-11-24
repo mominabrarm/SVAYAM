@@ -3,30 +3,85 @@
 @tailwind utilities;
 
 @layer base {
+  html, body, #root {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+  }
+
   * {
-    border-color: rgba(255, 255, 255, 0.08);
+    border-color: #0A0A0A;
   }
 
   body {
-    background-color: #0B0D11;
-    color: #F8FAFC;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #FFFFFF;
+    color: #0A0A0A;
+    font-family: 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     overflow-x: hidden;
   }
 
-  /* Custom subtle dark scrollbars */
+  /* Custom crisp minimalist scrollbars */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: transparent;
+    background: #FFFFFF;
   }
   ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.12);
+    background: #0A0A0A;
     border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.25);
+    background: #525252;
+  }
+}
+
+/* Micro-interaction utility classes */
+@layer utilities {
+  .pill-outline {
+    @apply rounded-full border-[1.5px] border-[#0A0A0A] bg-white px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-[#0A0A0A] transition-all hover:bg-[#0A0A0A] hover:text-white active:scale-95;
+  }
+
+  .pill-solid {
+    @apply rounded-full border-[1.5px] border-[#0A0A0A] bg-[#0A0A0A] px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-white transition-all hover:bg-white hover:text-[#0A0A0A] active:scale-95;
+  }
+
+  .pill-yellow {
+    @apply rounded-full border-[1.5px] border-[#0A0A0A] bg-[#FCE354] px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-[#0A0A0A] transition-all hover:bg-[#0A0A0A] hover:text-white active:scale-95;
+  }
+
+  .pill-blue {
+    @apply rounded-full border-[1.5px] border-[#0A0A0A] bg-[#55A8F8] px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-[#0A0A0A] transition-all hover:bg-[#0A0A0A] hover:text-white active:scale-95;
+  }
+
+  .pill-mint {
+    @apply rounded-full border-[1.5px] border-[#0A0A0A] bg-[#4DE59B] px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-[#0A0A0A] transition-all hover:bg-[#0A0A0A] hover:text-white active:scale-95;
+  }
+
+  .pill-lilac {
+    @apply rounded-full border-[1.5px] border-[#0A0A0A] bg-[#E8C6FF] px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-[#0A0A0A] transition-all hover:bg-[#0A0A0A] hover:text-white active:scale-95;
+  }
+
+  .card-pop {
+    @apply rounded-3xl border-[1.5px] border-[#0A0A0A] transition-all duration-200 hover:-translate-y-1 hover:shadow-hard;
+  }
+
+  .card-pop-tilt-left {
+    @apply rounded-3xl border-[1.5px] border-[#0A0A0A] transition-all duration-200 hover:-translate-y-1.5 hover:-rotate-1 hover:shadow-hard-lg;
+  }
+
+  .card-pop-tilt-right {
+    @apply rounded-3xl border-[1.5px] border-[#0A0A0A] transition-all duration-200 hover:-translate-y-1.5 hover:rotate-1 hover:shadow-hard-lg;
+  }
+
+  .font-display-hero {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    text-transform: uppercase;
+    font-style: italic;
+    letter-spacing: -0.03em;
   }
 }

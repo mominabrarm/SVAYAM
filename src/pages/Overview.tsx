@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { DEMO_7DAY_TRENDS, DEMO_BASELINES } from '../data/demoHealthData';
 import { 
@@ -10,27 +10,24 @@ import {
   ArrowRight, 
   TrendingDown, 
   TrendingUp, 
-  ShieldCheck, 
-  Activity,
-  Mic,
   Calendar,
-  AlertTriangle,
-  Info
+  Mic,
+  ArrowUpRight
 } from 'lucide-react';
 import { 
   ResponsiveContainer, 
-  AreaChart, 
-  Area, 
+  BarChart,
+  Bar, 
   XAxis, 
   YAxis, 
   Tooltip, 
   ReferenceLine,
-  BarChart,
-  Bar
+  CartesianGrid
 } from 'recharts';
 
 export const Overview: React.FC = () => {
   const { health, setHealth, setActiveTab, currentInsight, reminders } = useApp();
+  const [activeChartMetric, setActiveChartMetric] = useState<'sleep' | 'steps'>('sleep');
 
   const sleepDelta = Math.round((health.sleepHours - health.sleepBaseline) * 10) / 10;
   const stepsDelta = health.steps - health.stepsBaseline;
@@ -43,183 +40,188 @@ export const Overview: React.FC = () => {
   const pendingReminders = reminders.filter(r => r.status === 'pending');
 
   return (
-    <div className="space-y-6">
-      {/* Hero Welcome & Daily Briefing Card */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-surface-100 via-surface-200 to-surface-100 border border-white/[0.08] p-6 shadow-xl">
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2 max-w-2xl">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-svayam-violet-light flex items-center gap-1.5">
+    <div className="w-full space-y-8 select-none">
+      {/* Editorial Hero Header */}
+      <div className="rounded-3xl border-[1.5px] border-[#0A0A0A] bg-white p-6 sm:p-10 shadow-hard relative overflow-hidden">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+          <div className="space-y-4 max-w-3xl">
+            {/* Top pill badges */}
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="rounded-full border-[1.5px] border-[#0A0A0A] bg-[#FCE354] px-3.5 py-1 text-xs font-black uppercase tracking-wider text-[#0A0A0A] flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5" />
-                Daily Intelligence Briefing
+                <span>Daily Intelligence Briefing</span>
               </span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20 font-medium">
-                Demo Health Connect Active
+              <span className="rounded-full border-[1.5px] border-[#0A0A0A] bg-white px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[#0A0A0A]">
+                Demo Health Connect
               </span>
             </div>
 
-            <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
-              Good evening, Alex.
+            {/* High-impact condensed heading */}
+            <h1 className="font-display font-black text-4xl sm:text-6xl md:text-7xl uppercase italic tracking-tight text-[#0A0A0A] leading-none">
+              DON'T GUESS.<br />
+              KNOW YOUR STATE.
             </h1>
 
-            <p className="text-sm text-slate-300 leading-relaxed">
-              Your sleep last night was <strong className="text-amber-400 font-semibold">{health.sleepHours} hours</strong>, which is{' '}
-              <span className="text-amber-400 font-medium">{Math.abs(sleepDelta)} hours shorter</span> than your {health.sleepBaseline}-hour baseline.
+            <p className="text-sm sm:text-base font-medium text-[#262626] leading-relaxed max-w-2xl">
+              Sleep last night was <strong className="font-bold underline decoration-[#FCE354] decoration-4 underline-offset-2">{health.sleepHours} hours</strong>, which is{' '}
+              <strong className="font-bold">{Math.abs(sleepDelta)} hours below</strong> your {health.sleepBaseline}h baseline.
               {health.reportedEnergy === 'low' && (
-                <span> You have self-reported <strong className="text-amber-300">low energy</strong> today.</span>
+                <span> Self-reported energy is currently <strong className="bg-[#FCE354] px-1.5 py-0.5 rounded border border-[#0A0A0A] font-bold">low</strong>.</span>
               )}
             </p>
           </div>
 
-          {/* Quick Voice Launcher CTA */}
+          {/* Action CTAs: Solid Black Pill & Outlined Pill */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
             <button
               onClick={() => setActiveTab('voice')}
-              className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-svayam-violet hover:bg-svayam-violet-dark text-white font-medium text-sm transition shadow-lg shadow-svayam-violet/25 group"
+              className="flex items-center justify-center gap-2 px-6 py-3.5 rounded-full border-[1.5px] border-[#0A0A0A] bg-[#0A0A0A] hover:bg-[#FCE354] text-white hover:text-[#0A0A0A] text-xs font-extrabold uppercase tracking-wider transition-all duration-150 shadow-hard-xs active:scale-95 group"
             >
               <Mic className="w-4 h-4 group-hover:scale-110 transition-transform" />
               <span>Talk to SVAYAM</span>
+              <ArrowUpRight className="w-4 h-4 ml-0.5" />
             </button>
             <button
               onClick={() => setActiveTab('insights')}
-              className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-slate-300 hover:text-white font-medium text-sm transition"
+              className="flex items-center justify-center gap-2 px-5 py-3.5 rounded-full border-[1.5px] border-[#0A0A0A] bg-white hover:bg-[#0A0A0A] text-[#0A0A0A] hover:text-white text-xs font-extrabold uppercase tracking-wider transition-all duration-150 shadow-hard-xs active:scale-95"
             >
               <span>Connect the Dots</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         </div>
-
-        {/* Subtle decorative background gradient */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-svayam-violet/5 rounded-full blur-3xl pointer-events-none" />
       </div>
 
-      {/* 4 Core Health Metric Cards (Strictly as specified in Prompt Section 4) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Metric 1: Sleep */}
-        <div className="p-5 rounded-xl bg-surface-100 border border-white/[0.06] flex flex-col justify-between hover:border-white/10 transition">
-          <div className="flex items-center justify-between text-slate-400 mb-3">
-            <div className="flex items-center gap-2 text-xs font-medium text-slate-300">
-              <Moon className="w-4 h-4 text-svayam-violet-light" />
-              <span>Sleep Duration</span>
-            </div>
-            <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-400">
+      {/* 4 Core Health Metric Cards (Color-Blocked Pop Minimalist Palette) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 w-full">
+        {/* Metric 1: Sleep Duration (Pure White Card) */}
+        <div className="rounded-3xl border-[1.5px] border-[#0A0A0A] bg-white p-6 shadow-hard transition-all duration-200 hover:-translate-y-1.5 hover:-rotate-1 hover:shadow-hard-lg flex flex-col justify-between space-y-4 overflow-hidden min-w-0">
+          <div className="flex items-center justify-between gap-2 min-w-0">
+            <span className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-[#0A0A0A] truncate">
+              <Moon className="w-4 h-4 shrink-0" />
+              <span>Sleep</span>
+            </span>
+            <span className="rounded-full border-[1.5px] border-[#0A0A0A] bg-[#FAFAFA] px-2.5 py-0.5 text-[10px] font-black uppercase text-[#0A0A0A] shrink-0">
               Last Night
             </span>
           </div>
 
-          <div className="space-y-1">
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold font-mono text-white">{health.sleepHours}</span>
-              <span className="text-xs text-slate-400 font-medium">hours</span>
+          <div className="space-y-1 min-w-0">
+            <div className="flex items-baseline gap-2 min-w-0">
+              <span className="font-display font-black text-[clamp(1.75rem,2.4vw,2.75rem)] text-[#0A0A0A] leading-none tracking-tight max-w-full truncate">
+                {health.sleepHours}
+              </span>
+              <span className="text-xs font-bold uppercase tracking-wider text-[#525252] shrink-0">HOURS</span>
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-amber-400 font-medium">
-              <TrendingDown className="w-3.5 h-3.5" />
-              <span>{Math.abs(sleepDelta)}h below baseline ({health.sleepBaseline}h)</span>
+            <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border-[1.5px] border-[#0A0A0A] bg-[#FCE354] text-[#0A0A0A] text-[11px] font-black uppercase max-w-full truncate">
+              <TrendingDown className="w-3.5 h-3.5 shrink-0" />
+              <span className="truncate">{Math.abs(sleepDelta)}h vs {health.sleepBaseline}h baseline</span>
             </div>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-white/[0.05] flex items-center justify-between text-[11px] text-slate-500">
-            <span>30-Day Avg: {DEMO_BASELINES.sleep.average}h</span>
-            <span className="text-amber-400/80 font-medium">Rest deficit</span>
+          <div className="pt-3 border-t-[1.5px] border-[#0A0A0A] flex items-center justify-between text-[11px] font-bold text-[#525252] min-w-0">
+            <span className="truncate">30-Day Avg: {DEMO_BASELINES.sleep.average}h</span>
+            <span className="text-[#0A0A0A] font-black uppercase shrink-0">Deficit</span>
           </div>
         </div>
 
-        {/* Metric 2: Steps */}
-        <div className="p-5 rounded-xl bg-surface-100 border border-white/[0.06] flex flex-col justify-between hover:border-white/10 transition">
-          <div className="flex items-center justify-between text-slate-400 mb-3">
-            <div className="flex items-center gap-2 text-xs font-medium text-slate-300">
-              <Footprints className="w-4 h-4 text-svayam-emerald" />
+        {/* Metric 2: Steps (Sky Blue Card #55A8F8) */}
+        <div className="rounded-3xl border-[1.5px] border-[#0A0A0A] bg-[#55A8F8] p-6 shadow-hard transition-all duration-200 hover:-translate-y-1.5 hover:rotate-1 hover:shadow-hard-lg flex flex-col justify-between space-y-4 overflow-hidden min-w-0">
+          <div className="flex items-center justify-between gap-2 min-w-0">
+            <span className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-[#0A0A0A] truncate">
+              <Footprints className="w-4 h-4 shrink-0" />
               <span>Daily Steps</span>
-            </div>
-            <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-400">
+            </span>
+            <span className="rounded-full border-[1.5px] border-[#0A0A0A] bg-white px-2.5 py-0.5 text-[10px] font-black uppercase text-[#0A0A0A] shrink-0">
               Today
             </span>
           </div>
 
-          <div className="space-y-1">
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold font-mono text-white">
+          <div className="space-y-1 min-w-0">
+            <div className="flex items-baseline gap-2 min-w-0">
+              <span className="font-display font-black text-[clamp(1.75rem,2.4vw,2.75rem)] text-[#0A0A0A] leading-none tracking-tight max-w-full truncate">
                 {health.steps.toLocaleString()}
               </span>
-              <span className="text-xs text-slate-400 font-medium">steps</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-[#0A0A0A] shrink-0">STEPS</span>
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
-              <span>Goal: {health.stepsBaseline.toLocaleString()}</span>
-              <span className="text-slate-500 font-mono">({Math.round((health.steps / health.stepsBaseline) * 100)}%)</span>
+            <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border-[1.5px] border-[#0A0A0A] bg-white text-[#0A0A0A] text-[11px] font-black uppercase max-w-full truncate">
+              <span className="truncate">Goal: {health.stepsBaseline.toLocaleString()}</span>
+              <span className="shrink-0">({Math.round((health.steps / health.stepsBaseline) * 100)}%)</span>
             </div>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-white/[0.05] flex items-center justify-between text-[11px] text-slate-500">
-            <span>Target: 8,500</span>
-            <span className="text-slate-400">{Math.abs(stepsDelta).toLocaleString()} remaining</span>
+          <div className="pt-3 border-t-[1.5px] border-[#0A0A0A] flex items-center justify-between text-[11px] font-bold text-[#0A0A0A] min-w-0">
+            <span className="truncate">Target: 8,500</span>
+            <span className="font-black shrink-0">{Math.abs(stepsDelta).toLocaleString()} left</span>
           </div>
         </div>
 
-        {/* Metric 3: Heart Rate */}
-        <div className="p-5 rounded-xl bg-surface-100 border border-white/[0.06] flex flex-col justify-between hover:border-white/10 transition">
-          <div className="flex items-center justify-between text-slate-400 mb-3">
-            <div className="flex items-center gap-2 text-xs font-medium text-slate-300">
-              <Heart className="w-4 h-4 text-svayam-rose" />
-              <span>Average Heart Rate</span>
-            </div>
-            <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-400">
+        {/* Metric 3: Heart Rate (Soft Lilac Card #E8C6FF) */}
+        <div className="rounded-3xl border-[1.5px] border-[#0A0A0A] bg-[#E8C6FF] p-6 shadow-hard transition-all duration-200 hover:-translate-y-1.5 hover:-rotate-1 hover:shadow-hard-lg flex flex-col justify-between space-y-4 overflow-hidden min-w-0">
+          <div className="flex items-center justify-between gap-2 min-w-0">
+            <span className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-[#0A0A0A] truncate">
+              <Heart className="w-4 h-4 shrink-0" />
+              <span>Heart Rate</span>
+            </span>
+            <span className="rounded-full border-[1.5px] border-[#0A0A0A] bg-white px-2.5 py-0.5 text-[10px] font-black uppercase text-[#0A0A0A] shrink-0">
               Daytime
             </span>
           </div>
 
-          <div className="space-y-1">
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold font-mono text-white">{health.heartRateAvg}</span>
-              <span className="text-xs text-slate-400 font-medium">BPM</span>
+          <div className="space-y-1 min-w-0">
+            <div className="flex items-baseline gap-2 min-w-0">
+              <span className="font-display font-black text-[clamp(1.75rem,2.4vw,2.75rem)] text-[#0A0A0A] leading-none tracking-tight max-w-full truncate">
+                {health.heartRateAvg}
+              </span>
+              <span className="text-xs font-bold uppercase tracking-wider text-[#0A0A0A] shrink-0">BPM</span>
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-amber-400 font-medium">
-              <TrendingUp className="w-3.5 h-3.5" />
-              <span>+{hrDelta} BPM over baseline ({health.heartRateBaseline})</span>
+            <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border-[1.5px] border-[#0A0A0A] bg-white text-[#0A0A0A] text-[11px] font-black uppercase max-w-full truncate">
+              <TrendingUp className="w-3.5 h-3.5 shrink-0" />
+              <span className="truncate">+{hrDelta} BPM over {health.heartRateBaseline}</span>
             </div>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-white/[0.05] flex items-center justify-between text-[11px] text-slate-500">
-            <span>Resting Baseline: {health.heartRateBaseline} BPM</span>
-            <span className="text-amber-400/80">Mild elevation</span>
+          <div className="pt-3 border-t-[1.5px] border-[#0A0A0A] flex items-center justify-between text-[11px] font-bold text-[#0A0A0A] min-w-0">
+            <span className="truncate">Baseline: {health.heartRateBaseline} BPM</span>
+            <span className="font-black uppercase shrink-0">Mild Elevation</span>
           </div>
         </div>
 
-        {/* Metric 4: Reported Energy */}
-        <div className="p-5 rounded-xl bg-surface-100 border border-white/[0.06] flex flex-col justify-between hover:border-white/10 transition">
-          <div className="flex items-center justify-between text-slate-400 mb-3">
-            <div className="flex items-center gap-2 text-xs font-medium text-slate-300">
-              <Zap className="w-4 h-4 text-amber-400" />
-              <span>Reported Energy</span>
-            </div>
-            <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20">
+        {/* Metric 4: Reported Energy (Mint Green Card #4DE59B) */}
+        <div className="rounded-3xl border-[1.5px] border-[#0A0A0A] bg-[#4DE59B] p-6 shadow-hard transition-all duration-200 hover:-translate-y-1.5 hover:rotate-1 hover:shadow-hard-lg flex flex-col justify-between space-y-4 overflow-hidden min-w-0">
+          <div className="flex items-center justify-between gap-2 min-w-0">
+            <span className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-[#0A0A0A] truncate">
+              <Zap className="w-4 h-4 shrink-0" />
+              <span>Energy</span>
+            </span>
+            <span className="rounded-full border-[1.5px] border-[#0A0A0A] bg-white px-2.5 py-0.5 text-[10px] font-black uppercase text-[#0A0A0A] shrink-0">
               Subjective
             </span>
           </div>
 
-          <div className="space-y-1">
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold capitalize text-white font-mono">
+          <div className="space-y-1 min-w-0">
+            <div className="flex items-baseline gap-2 min-w-0">
+              <span className="font-display font-black text-[clamp(1.75rem,2.4vw,2.75rem)] text-[#0A0A0A] leading-none uppercase tracking-tight max-w-full truncate">
                 {health.reportedEnergy}
               </span>
             </div>
-            <p className="text-xs text-slate-400 font-medium">
+            <p className="text-[11px] font-bold text-[#0A0A0A] leading-tight truncate">
               {health.reportedEnergy === 'low' 
                 ? 'Coincides with 5h sleep deficit' 
-                : 'Balanced with physiological metrics'}
+                : 'Balanced with metrics'}
             </p>
           </div>
 
-          {/* Quick Energy Selector */}
-          <div className="mt-4 pt-3 border-t border-white/[0.05] flex items-center gap-1 text-[11px]">
+          {/* Quick Pill Energy Selector - 3-column grid for clean fit */}
+          <div className="pt-3 border-t-[1.5px] border-[#0A0A0A] grid grid-cols-3 gap-1.5 w-full min-w-0">
             {(['low', 'moderate', 'optimal'] as const).map(lvl => (
               <button
                 key={lvl}
                 onClick={() => handleSetEnergy(lvl)}
-                className={`flex-1 py-1 rounded text-center capitalize transition ${
+                className={`py-1.5 px-2 rounded-full text-center capitalize text-xs font-black transition-all border-[1.5px] border-[#0A0A0A] truncate active:scale-95 ${
                   health.reportedEnergy === lvl
-                    ? 'bg-amber-500/20 text-amber-300 font-semibold border border-amber-500/30'
-                    : 'bg-white/[0.03] text-slate-400 hover:text-slate-200'
+                    ? 'bg-[#0A0A0A] text-white shadow-hard-xs'
+                    : 'bg-white text-[#0A0A0A] hover:bg-[#FCE354]'
                 }`}
               >
                 {lvl}
@@ -229,102 +231,153 @@ export const Overview: React.FC = () => {
         </div>
       </div>
 
-      {/* Two Column Section: Trend Chart & Active Insights / Radar */}
+      {/* Two Column Section: Interactive Trend Chart & Connected Dots / Radar Preview */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left 2 Cols: 7-Day Sleep Trend vs 7.0h Personal Baseline Chart */}
-        <div className="lg:col-span-2 p-6 rounded-2xl bg-surface-100 border border-white/[0.06] space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        {/* Left 2 Cols: 7-Day Activity & Sleep Trend Chart with interactive switch */}
+        <div className="lg:col-span-2 rounded-3xl border-[1.5px] border-[#0A0A0A] bg-white p-6 sm:p-8 shadow-hard space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h2 className="text-base font-semibold text-white tracking-tight flex items-center gap-2">
-                <Moon className="w-4 h-4 text-svayam-violet-light" />
-                <span>Sleep Duration vs 7.0h Personal Baseline</span>
+              <h2 className="font-display font-black text-2xl uppercase italic tracking-tight text-[#0A0A0A] flex items-center gap-2">
+                <span>HEALTH & ROUTINE TRENDS</span>
               </h2>
-              <p className="text-xs text-slate-400">
-                Visualizing recent nights against your consistent 30-day baseline.
+              <p className="text-xs font-bold text-[#525252] mt-0.5">
+                Past 7 days compared against your personalized 30-day baseline.
               </p>
             </div>
-            <div className="flex items-center gap-4 text-xs font-mono">
-              <div className="flex items-center gap-1.5 text-slate-300">
-                <span className="w-2.5 h-2.5 rounded-full bg-svayam-violet" />
-                <span>Actual Sleep (hrs)</span>
-              </div>
-              <div className="flex items-center gap-1.5 text-slate-400">
-                <span className="w-3 h-0.5 border-t-2 border-dashed border-svayam-emerald" />
-                <span>Baseline (7.0h)</span>
-              </div>
+
+            {/* Interactive Metric Switcher Pills */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setActiveChartMetric('sleep')}
+                className={`px-3 py-1.5 rounded-full border-[1.5px] border-[#0A0A0A] text-xs font-black uppercase tracking-wider transition-all duration-150 active:scale-95 ${
+                  activeChartMetric === 'sleep'
+                    ? 'bg-[#0A0A0A] text-white shadow-hard-xs'
+                    : 'bg-white text-[#0A0A0A] hover:bg-[#55A8F8]'
+                }`}
+              >
+                Sleep (hrs)
+              </button>
+              <button
+                onClick={() => setActiveChartMetric('steps')}
+                className={`px-3 py-1.5 rounded-full border-[1.5px] border-[#0A0A0A] text-xs font-black uppercase tracking-wider transition-all duration-150 active:scale-95 ${
+                  activeChartMetric === 'steps'
+                    ? 'bg-[#0A0A0A] text-white shadow-hard-xs'
+                    : 'bg-white text-[#0A0A0A] hover:bg-[#4DE59B]'
+                }`}
+              >
+                Daily Steps
+              </button>
             </div>
           </div>
 
-          {/* Recharts Area Chart */}
-          <div className="h-64 w-full pt-4">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={DEMO_7DAY_TRENDS} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="sleepGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.4}/>
-                    <stop offset="95%" stopColor="#8B5CF6" stopOpacity={0.0}/>
-                  </linearGradient>
-                </defs>
+          {/* Recharts Bar / Trend Chart */}
+          <div className="h-[260px] w-full pt-2">
+            <ResponsiveContainer width="100%" height={260}>
+              <BarChart data={DEMO_7DAY_TRENDS} margin={{ top: 15, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid stroke="#E5E5E5" strokeDasharray="3 3" vertical={false} />
                 <XAxis 
                   dataKey="dayLabel" 
-                  stroke="#64748B" 
+                  stroke="#0A0A0A" 
                   fontSize={11} 
+                  fontWeight={700}
                   tickLine={false}
-                  axisLine={{ stroke: '#334155' }}
+                  axisLine={{ stroke: '#0A0A0A', strokeWidth: 1.5 }}
                 />
-                <YAxis 
-                  domain={[3, 9]} 
-                  stroke="#64748B" 
-                  fontSize={11} 
-                  tickLine={false}
-                  axisLine={{ stroke: '#334155' }}
-                  ticks={[4, 5, 6, 7, 8]}
-                />
+                {activeChartMetric === 'sleep' ? (
+                  <YAxis 
+                    domain={[3, 9]} 
+                    stroke="#0A0A0A" 
+                    fontSize={11} 
+                    fontWeight={700}
+                    tickLine={false}
+                    axisLine={{ stroke: '#0A0A0A', strokeWidth: 1.5 }}
+                    ticks={[4, 5, 6, 7, 8]}
+                  />
+                ) : (
+                  <YAxis 
+                    domain={[0, 12000]} 
+                    stroke="#0A0A0A" 
+                    fontSize={11} 
+                    fontWeight={700}
+                    tickLine={false}
+                    axisLine={{ stroke: '#0A0A0A', strokeWidth: 1.5 }}
+                    ticks={[3000, 6000, 8500, 11000]}
+                  />
+                )}
                 <Tooltip 
                   content={({ active, payload }) => {
                     if (active && payload && payload.length) {
                       const data = payload[0].payload;
-                      const diff = Math.round((data.sleepHours - 7.0) * 10) / 10;
+                      const isSleep = activeChartMetric === 'sleep';
+                      const diff = isSleep 
+                        ? Math.round((data.sleepHours - health.sleepBaseline) * 10) / 10
+                        : data.steps - health.stepsBaseline;
+
                       return (
-                        <div className="bg-surface-200 border border-white/10 p-3 rounded-lg shadow-xl text-xs space-y-1">
-                          <p className="font-semibold text-white">{data.dayLabel} ({data.date})</p>
-                          <p className="text-svayam-violet-light font-mono font-medium">
-                            Sleep: {data.sleepHours} hrs
+                        <div className="bg-white border-[1.5px] border-[#0A0A0A] p-3 rounded-2xl shadow-[3px_3px_0px_#0A0A0A] text-xs space-y-1">
+                          <p className="font-extrabold text-[#0A0A0A]">{data.dayLabel} ({data.date})</p>
+                          <p className="font-black text-sm text-[#0A0A0A]">
+                            {isSleep ? `Sleep: ${data.sleepHours} hrs` : `Steps: ${data.steps.toLocaleString()}`}
                           </p>
-                          <p className={`font-mono ${diff < 0 ? 'text-amber-400' : 'text-svayam-emerald'}`}>
-                            {diff >= 0 ? `+${diff}` : diff}h vs 7.0h baseline
+                          <p className="font-bold text-[#262626]">
+                            {isSleep 
+                              ? `${diff >= 0 ? `+${diff}` : diff}h vs ${health.sleepBaseline}h baseline`
+                              : `${diff >= 0 ? `+${diff}` : diff} steps vs ${health.stepsBaseline.toLocaleString()} goal`
+                            }
                           </p>
-                          <p className="text-slate-400 text-[10px]">Steps: {data.steps.toLocaleString()} • HR: {data.heartRateAvg} BPM</p>
+                          <p className="text-[#525252] text-[10px] font-bold">
+                            HR: {data.heartRateAvg} BPM • Energy: {data.energyLevel}
+                          </p>
                         </div>
                       );
                     }
                     return null;
                   }}
                 />
-                <ReferenceLine 
-                  y={7.0} 
-                  stroke="#10B981" 
-                  strokeDasharray="4 4" 
-                  strokeWidth={1.5}
-                  label={{ value: 'Baseline (7.0h)', fill: '#10B981', fontSize: 10, position: 'right' }} 
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey="sleepHours" 
-                  stroke="#8B5CF6" 
-                  strokeWidth={2.5} 
-                  fillOpacity={1} 
-                  fill="url(#sleepGradient)" 
-                />
-              </AreaChart>
+                {activeChartMetric === 'sleep' ? (
+                  <>
+                    <ReferenceLine 
+                      y={health.sleepBaseline} 
+                      stroke="#0A0A0A" 
+                      strokeDasharray="4 4" 
+                      strokeWidth={2}
+                      label={{ value: `Baseline ${health.sleepBaseline}h`, fill: '#0A0A0A', fontSize: 11, fontWeight: 800, position: 'right' }} 
+                    />
+                    <Bar 
+                      dataKey="sleepHours" 
+                      fill="#55A8F8" 
+                      stroke="#0A0A0A" 
+                      strokeWidth={1.5}
+                      radius={[8, 8, 0, 0]}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <ReferenceLine 
+                      y={health.stepsBaseline} 
+                      stroke="#0A0A0A" 
+                      strokeDasharray="4 4" 
+                      strokeWidth={2}
+                      label={{ value: `Goal ${health.stepsBaseline.toLocaleString()}`, fill: '#0A0A0A', fontSize: 11, fontWeight: 800, position: 'right' }} 
+                    />
+                    <Bar 
+                      dataKey="steps" 
+                      fill="#4DE59B" 
+                      stroke="#0A0A0A" 
+                      strokeWidth={1.5}
+                      radius={[8, 8, 0, 0]}
+                    />
+                  </>
+                )}
+              </BarChart>
             </ResponsiveContainer>
           </div>
 
-          <div className="p-3 rounded-xl bg-surface-200/60 border border-white/[0.04] flex items-center justify-between text-xs">
-            <span className="text-slate-400">Noticeable dip on Nov 24: Sleep dropped to 5.0h (-2.0h deficit)</span>
+          <div className="p-4 rounded-2xl border-[1.5px] border-[#0A0A0A] bg-[#FAFAFA] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-bold text-[#0A0A0A]">
+            <span>Noticeable dip on Nov 24: Sleep dropped to 5.0h (-2.0h deficit) with 6,240 steps</span>
             <button 
               onClick={() => setActiveTab('insights')}
-              className="text-svayam-violet-light hover:underline font-medium flex items-center gap-1"
+              className="text-[#0A0A0A] hover:bg-[#FCE354] px-3 py-1 rounded-full border border-[#0A0A0A] inline-flex items-center gap-1 transition uppercase text-[11px] font-extrabold w-fit"
             >
               <span>Examine Correlation</span>
               <ArrowRight className="w-3 h-3" />
@@ -333,69 +386,71 @@ export const Overview: React.FC = () => {
         </div>
 
         {/* Right Col: Latest Connected Dot & Proactive Reminders */}
-        <div className="space-y-4">
-          {/* Connected Dots Card Preview */}
-          <div className="p-5 rounded-2xl bg-surface-100 border border-white/[0.06] space-y-3">
+        <div className="space-y-6">
+          {/* Connected Dots Card Preview (Soft Lilac #E8C6FF) */}
+          <div className="rounded-3xl border-[1.5px] border-[#0A0A0A] bg-[#E8C6FF] p-6 shadow-hard transition-all duration-200 hover:-translate-y-1 hover:shadow-hard-lg space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold uppercase tracking-wider text-svayam-emerald flex items-center gap-1.5">
+              <span className="rounded-full border-[1.5px] border-[#0A0A0A] bg-white px-3 py-1 text-[11px] font-black uppercase tracking-wider text-[#0A0A0A] flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5" />
-                Connected Observation
+                <span>Connected Dot</span>
               </span>
-              <span className="text-[10px] text-slate-500 font-mono">Live</span>
+              <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full border border-[#0A0A0A] bg-[#4DE59B] text-[#0A0A0A]">
+                Live
+              </span>
             </div>
 
-            <h3 className="text-sm font-semibold text-white leading-snug">
+            <h3 className="font-display font-black text-2xl uppercase tracking-tight text-[#0A0A0A] leading-tight">
               {currentInsight.title}
             </h3>
 
-            <p className="text-xs text-slate-400 leading-relaxed line-clamp-3">
+            <p className="text-xs font-semibold text-[#262626] leading-relaxed line-clamp-3">
               {currentInsight.observation}
             </p>
 
             <button
               onClick={() => setActiveTab('insights')}
-              className="w-full py-2 px-3 rounded-lg bg-svayam-violet/15 hover:bg-svayam-violet/25 border border-svayam-violet/30 text-svayam-violet-light text-xs font-medium transition flex items-center justify-center gap-1.5"
+              className="w-full py-2.5 px-4 rounded-full border-[1.5px] border-[#0A0A0A] bg-[#0A0A0A] hover:bg-white text-white hover:text-[#0A0A0A] text-xs font-extrabold uppercase tracking-wider transition-all duration-150 shadow-hard-xs flex items-center justify-center gap-2 active:scale-95"
             >
-              <span>Inspect Full Evidence & Reasoning</span>
+              <span>Inspect Reasoning</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          {/* Future Radar Quick Alert Card */}
-          <div className="p-5 rounded-2xl bg-surface-100 border border-white/[0.06] space-y-3">
+          {/* Future Radar Quick Alert Card (Mint Green #4DE59B) */}
+          <div className="rounded-3xl border-[1.5px] border-[#0A0A0A] bg-[#4DE59B] p-6 shadow-hard transition-all duration-200 hover:-translate-y-1 hover:shadow-hard-lg space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold uppercase tracking-wider text-svayam-violet-light flex items-center gap-1.5">
+              <span className="rounded-full border-[1.5px] border-[#0A0A0A] bg-white px-3 py-1 text-[11px] font-black uppercase tracking-wider text-[#0A0A0A] flex items-center gap-1.5">
                 <Calendar className="w-3.5 h-3.5" />
-                Future Radar
+                <span>Future Radar</span>
               </span>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-svayam-violet/20 text-svayam-violet-light">
+              <span className="rounded-full border-[1.5px] border-[#0A0A0A] bg-[#FCE354] px-2.5 py-0.5 text-[10px] font-black uppercase text-[#0A0A0A]">
                 {pendingReminders.length} Pending
               </span>
             </div>
 
             {pendingReminders.length > 0 ? (
-              <div className="space-y-2">
+              <div className="space-y-2.5">
                 {pendingReminders.slice(0, 2).map(rem => (
-                  <div key={rem.id} className="p-3 rounded-xl bg-surface-200/80 border border-white/[0.04] space-y-1">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-semibold text-slate-200">{rem.title}</span>
-                      <span className="text-[10px] text-amber-400 font-mono">{rem.dateLabel}</span>
+                  <div key={rem.id} className="p-3.5 rounded-2xl bg-white border-[1.5px] border-[#0A0A0A] space-y-1 shadow-hard-xs">
+                    <div className="flex items-center justify-between text-xs font-extrabold text-[#0A0A0A]">
+                      <span>{rem.title}</span>
+                      <span className="rounded-full border border-[#0A0A0A] bg-[#FCE354] px-2 py-0.2 text-[10px] uppercase">{rem.dateLabel}</span>
                     </div>
-                    <p className="text-[11px] text-slate-400 line-clamp-2">
+                    <p className="text-[11px] font-medium text-[#262626] line-clamp-2">
                       {rem.description}
                     </p>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-slate-500 italic">No upcoming reminders on the radar.</p>
+              <p className="text-xs font-medium text-[#262626] italic">No upcoming reminders on radar.</p>
             )}
 
             <button
               onClick={() => setActiveTab('radar')}
-              className="w-full py-2 px-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] text-slate-300 hover:text-white text-xs font-medium transition flex items-center justify-center gap-1.5"
+              className="w-full py-2.5 px-4 rounded-full border-[1.5px] border-[#0A0A0A] bg-white hover:bg-[#0A0A0A] text-[#0A0A0A] hover:text-white text-xs font-extrabold uppercase tracking-wider transition-all duration-150 shadow-hard-xs flex items-center justify-center gap-2 active:scale-95"
             >
-              <span>Open Future Radar</span>
+              <span>Open Radar</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>

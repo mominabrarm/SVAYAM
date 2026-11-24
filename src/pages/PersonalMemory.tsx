@@ -9,11 +9,10 @@ import {
   Tag, 
   Search, 
   Mic, 
-  CheckCircle2, 
   Clock, 
   Download, 
   X,
-  FileText
+  ArrowUpRight
 } from 'lucide-react';
 
 export const PersonalMemoryPage: React.FC = () => {
@@ -28,6 +27,13 @@ export const PersonalMemoryPage: React.FC = () => {
   const [newCategory, setNewCategory] = useState<MemoryCategory>('commitment');
   const [newEventDate, setNewEventDate] = useState('');
   const [newTags, setNewTags] = useState('');
+
+  const cardFills = [
+    'bg-[#55A8F8]', // Sky Blue
+    'bg-[#E8C6FF]', // Soft Lilac
+    'bg-[#4DE59B]', // Mint Green
+    'bg-white',     // Pure White
+  ];
 
   const filteredMemories = memories.filter(m => {
     const matchesCat = filterCategory === 'all' || m.category === filterCategory;
@@ -66,23 +72,27 @@ export const PersonalMemoryPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="pb-4 border-b border-white/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
-            <Brain className="w-6 h-6 text-svayam-violet-light" />
-            <span>Personal Memory</span>
+    <div className="w-full space-y-8 select-none">
+      {/* Editorial Header */}
+      <div className="pb-6 border-b-[1.5px] border-[#0A0A0A] flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+        <div className="space-y-3 max-w-3xl">
+          <div className="flex items-center gap-2">
+            <span className="rounded-full border-[1.5px] border-[#0A0A0A] bg-[#E8C6FF] px-3 py-0.5 text-xs font-black tracking-wider uppercase text-[#0A0A0A]">
+              Personal Context Engine
+            </span>
+          </div>
+          <h1 className="font-display font-black text-4xl sm:text-6xl md:text-7xl uppercase italic tracking-tight text-[#0A0A0A] leading-none">
+            PERSONAL MEMORY
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm font-semibold text-[#262626] leading-relaxed">
             Your remembered context, reflections, commitments and habits. Stored locally in your browser.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2.5">
           <button
             onClick={handleExportJSON}
-            className="px-3 py-2 rounded-lg bg-surface-100 hover:bg-surface-subtle border border-white/[0.06] text-slate-300 hover:text-white text-xs font-medium transition flex items-center gap-1.5"
+            className="px-4 py-2.5 rounded-full border-[1.5px] border-[#0A0A0A] bg-white hover:bg-[#FAFAFA] text-[#0A0A0A] text-xs font-black uppercase tracking-wider transition-all duration-150 shadow-hard-xs flex items-center gap-2 active:scale-95"
             title="Download personal memories as JSON"
           >
             <Download className="w-3.5 h-3.5" />
@@ -90,7 +100,7 @@ export const PersonalMemoryPage: React.FC = () => {
           </button>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="px-4 py-2 rounded-lg bg-svayam-violet hover:bg-svayam-violet-dark text-white text-xs font-medium transition shadow-md shadow-svayam-violet/20 flex items-center gap-1.5"
+            className="px-5 py-2.5 rounded-full border-[1.5px] border-[#0A0A0A] bg-[#0A0A0A] hover:bg-[#FCE354] text-white hover:text-[#0A0A0A] text-xs font-black uppercase tracking-wider transition-all duration-150 shadow-hard-xs flex items-center gap-2 active:scale-95"
           >
             <Plus className="w-4 h-4" />
             <span>Add Memory</span>
@@ -99,11 +109,11 @@ export const PersonalMemoryPage: React.FC = () => {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
         {/* Category Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
           {[
-            { id: 'all', label: 'All Memories' },
+            { id: 'all', label: 'All' },
             { id: 'commitment', label: 'Commitments' },
             { id: 'feeling', label: 'Feelings' },
             { id: 'habit', label: 'Habits' },
@@ -112,10 +122,10 @@ export const PersonalMemoryPage: React.FC = () => {
             <button
               key={cat.id}
               onClick={() => setFilterCategory(cat.id)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition whitespace-nowrap ${
+              className={`px-4 py-2 rounded-full text-xs font-black uppercase tracking-wider transition-all duration-150 whitespace-nowrap border-[1.5px] border-[#0A0A0A] active:scale-95 ${
                 filterCategory === cat.id
-                  ? 'bg-svayam-violet/20 text-svayam-violet-light border border-svayam-violet/30'
-                  : 'bg-surface-100 text-slate-400 hover:text-slate-200 border border-white/[0.04]'
+                  ? 'bg-[#0A0A0A] text-white shadow-hard-xs'
+                  : 'bg-white text-[#0A0A0A] hover:bg-[#FCE354]'
               }`}
             >
               {cat.label}
@@ -124,132 +134,133 @@ export const PersonalMemoryPage: React.FC = () => {
         </div>
 
         {/* Search Input */}
-        <div className="relative min-w-[200px]">
-          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+        <div className="relative min-w-[220px]">
+          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#0A0A0A]" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search memories..."
-            className="w-full pl-9 pr-3 py-1.5 rounded-lg bg-surface-100 border border-white/[0.06] text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-svayam-violet/50"
+            className="w-full pl-10 pr-4 py-2 rounded-full border-[1.5px] border-[#0A0A0A] bg-white text-xs font-bold text-[#0A0A0A] placeholder-[#525252] shadow-hard-xs focus:outline-none focus:bg-[#FAFAFA]"
           />
         </div>
       </div>
 
       {/* Memory Cards Grid */}
       {filteredMemories.length === 0 ? (
-        <div className="py-16 text-center rounded-2xl bg-surface-100/60 border border-white/[0.04] p-6 space-y-3">
-          <Brain className="w-10 h-10 text-slate-600 mx-auto" />
-          <p className="text-sm text-slate-400">No memories match your selection.</p>
+        <div className="py-16 text-center rounded-3xl border-[1.5px] border-[#0A0A0A] bg-[#FAFAFA] p-8 space-y-3 shadow-hard">
+          <Brain className="w-12 h-12 text-[#0A0A0A] mx-auto" />
+          <p className="text-sm font-bold text-[#0A0A0A] uppercase">No memories match your selection.</p>
           <button
             onClick={() => { setFilterCategory('all'); setSearchQuery(''); }}
-            className="text-xs text-svayam-violet-light underline hover:text-white"
+            className="text-xs font-black uppercase text-[#0A0A0A] underline hover:text-[#55A8F8]"
           >
             Clear filters
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {filteredMemories.map(mem => (
-            <div
-              key={mem.id}
-              className="p-5 rounded-xl bg-surface-100 border border-white/[0.06] hover:border-white/10 transition flex flex-col justify-between space-y-4 group"
-            >
-              <div className="space-y-3">
-                {/* Card Header */}
-                <div className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2">
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider ${
-                      mem.category === 'commitment' ? 'bg-svayam-violet/15 text-svayam-violet-light border border-svayam-violet/30' :
-                      mem.category === 'feeling' ? 'bg-amber-500/10 text-amber-300 border border-amber-500/20' :
-                      mem.category === 'habit' ? 'bg-svayam-emerald/10 text-svayam-emerald border border-svayam-emerald/20' :
-                      'bg-blue-500/10 text-blue-300 border border-blue-500/20'
-                    }`}>
-                      {mem.category}
-                    </span>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {filteredMemories.map((mem, idx) => {
+            const fillClass = cardFills[idx % cardFills.length];
 
-                    {mem.extractedFromVoice && (
-                      <span className="flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-400">
-                        <Mic className="w-2.5 h-2.5 text-svayam-violet-light" />
-                        <span>Voice Captured</span>
+            return (
+              <div
+                key={mem.id}
+                className={`p-6 sm:p-7 rounded-3xl border-[1.5px] border-[#0A0A0A] ${fillClass} shadow-hard transition-all duration-200 hover:-translate-y-1.5 hover:shadow-hard-lg flex flex-col justify-between space-y-4 group`}
+              >
+                <div className="space-y-3">
+                  {/* Card Header */}
+                  <div className="flex items-center justify-between text-xs font-black uppercase">
+                    <div className="flex items-center gap-2">
+                      <span className="px-2.5 py-0.5 rounded-full border border-[#0A0A0A] bg-white text-[#0A0A0A] text-[10px]">
+                        {mem.category}
                       </span>
-                    )}
+
+                      {mem.extractedFromVoice && (
+                        <span className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border border-[#0A0A0A] bg-[#FCE354] text-[#0A0A0A]">
+                          <Mic className="w-2.5 h-2.5" />
+                          <span>Voice</span>
+                        </span>
+                      )}
+                    </div>
+
+                    <button
+                      onClick={() => deleteMemory(mem.id)}
+                      className="p-1.5 rounded-full border border-transparent hover:border-[#0A0A0A] hover:bg-white text-[#0A0A0A] transition"
+                      title="Delete memory"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
 
-                  <button
-                    onClick={() => deleteMemory(mem.id)}
-                    className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-red-500/10 text-slate-500 hover:text-red-400 transition"
-                    title="Delete memory"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-
-                {/* Content */}
-                <p className="text-sm text-slate-200 leading-relaxed font-medium">
-                  {mem.content}
-                </p>
-
-                {/* Context Note if available */}
-                {mem.contextNote && (
-                  <p className="text-xs text-slate-400 italic bg-surface-200/60 p-2 rounded-lg border border-white/[0.03]">
-                    {mem.contextNote}
+                  {/* Content */}
+                  <p className="font-display font-bold text-xl sm:text-2xl text-[#0A0A0A] leading-snug">
+                    "{mem.content}"
                   </p>
-                )}
-              </div>
 
-              {/* Card Footer: Date & Tags */}
-              <div className="pt-3 border-t border-white/[0.04] flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
-                <div className="flex items-center gap-1.5 text-[11px]">
-                  <Clock className="w-3 h-3" />
-                  <span>{new Date(mem.createdAt).toLocaleDateString()}</span>
+                  {/* Context Note if available */}
+                  {mem.contextNote && (
+                    <p className="text-xs font-semibold text-[#0A0A0A] bg-white p-3 rounded-2xl border-[1.5px] border-[#0A0A0A] shadow-hard-xs">
+                      {mem.contextNote}
+                    </p>
+                  )}
                 </div>
 
-                {mem.eventDate && (
-                  <div className="flex items-center gap-1 text-svayam-violet-light text-[11px] font-mono">
-                    <Calendar className="w-3 h-3" />
-                    <span>Target: {mem.eventDate}</span>
+                {/* Card Footer: Date & Tags */}
+                <div className="pt-3 border-t-[1.5px] border-[#0A0A0A] flex flex-wrap items-center justify-between gap-2 text-xs font-bold text-[#0A0A0A]">
+                  <div className="flex items-center gap-1.5 text-[11px]">
+                    <Clock className="w-3.5 h-3.5" />
+                    <span>{new Date(mem.createdAt).toLocaleDateString()}</span>
                   </div>
-                )}
 
-                {mem.tags && mem.tags.length > 0 && (
-                  <div className="flex items-center gap-1">
-                    {mem.tags.map(t => (
-                      <span key={t} className="text-[10px] px-1.5 py-0.2 rounded bg-white/[0.03] text-slate-400">
-                        #{t}
-                      </span>
-                    ))}
-                  </div>
-                )}
+                  {mem.eventDate && (
+                    <div className="flex items-center gap-1 text-[11px] font-black uppercase px-2 py-0.5 rounded-full border border-[#0A0A0A] bg-white">
+                      <Calendar className="w-3 h-3" />
+                      <span>{mem.eventDate}</span>
+                    </div>
+                  )}
+
+                  {mem.tags && mem.tags.length > 0 && (
+                    <div className="flex items-center gap-1">
+                      {mem.tags.map(t => (
+                        <span key={t} className="text-[10px] px-2 py-0.5 rounded-full border border-[#0A0A0A] bg-white text-[#0A0A0A] font-bold">
+                          #{t}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
       {/* Add Memory Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="w-full max-w-lg bg-surface-100 rounded-2xl border border-white/10 p-6 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-white/[0.06]">
-              <h2 className="text-base font-semibold text-white">Create Personal Memory</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 animate-in fade-in duration-150">
+          <div className="w-full max-w-lg bg-white rounded-3xl border-[2px] border-[#0A0A0A] p-6 sm:p-8 space-y-6 shadow-hard-xl">
+            <div className="flex items-center justify-between pb-3 border-b-[1.5px] border-[#0A0A0A]">
+              <h2 className="font-display font-black text-2xl uppercase italic tracking-tight text-[#0A0A0A]">
+                Create Personal Memory
+              </h2>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-slate-400 hover:text-white transition"
+                className="p-1 rounded-full border border-[#0A0A0A] hover:bg-[#FAFAFA] transition"
               >
-                <X className="w-4 h-4" />
+                <X className="w-4 h-4 text-[#0A0A0A]" />
               </button>
             </div>
 
             <form onSubmit={handleCreate} className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
+                <label className="block text-xs font-black uppercase tracking-wider text-[#0A0A0A] mb-1.5">
                   Category
                 </label>
                 <select
                   value={newCategory}
                   onChange={(e) => setNewCategory(e.target.value as MemoryCategory)}
-                  className="w-full bg-surface-200 border border-white/10 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-svayam-violet/50"
+                  className="w-full bg-[#FAFAFA] border-[1.5px] border-[#0A0A0A] rounded-2xl px-4 py-2.5 text-xs font-bold text-[#0A0A0A] focus:outline-none focus:bg-white"
                 >
                   <option value="commitment">Commitment / Event</option>
                   <option value="feeling">Feeling / Energy</option>
@@ -259,7 +270,7 @@ export const PersonalMemoryPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
+                <label className="block text-xs font-black uppercase tracking-wider text-[#0A0A0A] mb-1.5">
                   Memory Content
                 </label>
                 <textarea
@@ -268,26 +279,26 @@ export const PersonalMemoryPage: React.FC = () => {
                   value={newContent}
                   onChange={(e) => setNewContent(e.target.value)}
                   placeholder="e.g. Q4 Executive Product Presentation tomorrow at 2 PM..."
-                  className="w-full bg-surface-200 border border-white/10 rounded-lg p-3 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-svayam-violet/50"
+                  className="w-full bg-[#FAFAFA] border-[1.5px] border-[#0A0A0A] rounded-2xl p-4 text-xs font-bold text-[#0A0A0A] placeholder-[#525252] focus:outline-none focus:bg-white"
                 />
               </div>
 
               {newCategory === 'commitment' && (
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">
+                  <label className="block text-xs font-black uppercase tracking-wider text-[#0A0A0A] mb-1.5">
                     Event Date (Optional)
                   </label>
                   <input
                     type="date"
                     value={newEventDate}
                     onChange={(e) => setNewEventDate(e.target.value)}
-                    className="w-full bg-surface-200 border border-white/10 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-svayam-violet/50"
+                    className="w-full bg-[#FAFAFA] border-[1.5px] border-[#0A0A0A] rounded-2xl px-4 py-2.5 text-xs font-bold text-[#0A0A0A] focus:outline-none focus:bg-white"
                   />
                 </div>
               )}
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
+                <label className="block text-xs font-black uppercase tracking-wider text-[#0A0A0A] mb-1.5">
                   Tags (comma separated)
                 </label>
                 <input
@@ -295,21 +306,21 @@ export const PersonalMemoryPage: React.FC = () => {
                   value={newTags}
                   onChange={(e) => setNewTags(e.target.value)}
                   placeholder="presentation, work, focus"
-                  className="w-full bg-surface-200 border border-white/10 rounded-lg px-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-svayam-violet/50"
+                  className="w-full bg-[#FAFAFA] border-[1.5px] border-[#0A0A0A] rounded-2xl px-4 py-2.5 text-xs font-bold text-[#0A0A0A] placeholder-[#525252] focus:outline-none focus:bg-white"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-white/[0.06]">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t-[1.5px] border-[#0A0A0A]">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-lg bg-surface-200 hover:bg-surface-subtle text-slate-400 hover:text-white text-xs font-medium transition"
+                  className="px-5 py-2.5 rounded-full border-[1.5px] border-[#0A0A0A] bg-white hover:bg-[#FAFAFA] text-[#0A0A0A] text-xs font-black uppercase tracking-wider transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-lg bg-svayam-violet hover:bg-svayam-violet-dark text-white text-xs font-medium transition shadow-md shadow-svayam-violet/20"
+                  className="px-6 py-2.5 rounded-full border-[1.5px] border-[#0A0A0A] bg-[#0A0A0A] hover:bg-[#FCE354] text-white hover:text-[#0A0A0A] text-xs font-black uppercase tracking-wider transition shadow-hard-xs active:scale-95"
                 >
                   Save to Memory
                 </button>
